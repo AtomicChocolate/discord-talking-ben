@@ -12,6 +12,19 @@ If you're running this yourself, make sure you add a `config.json` file in `/src
 }
 ```
 
+Then, you can run it:
+
+```bash
+npm start
+```
+
+Or as a Docker container:
+
+```bash
+docker-compose build
+docker-compose up -d
+```
+
 ### Made with
 
 - Discord.js
