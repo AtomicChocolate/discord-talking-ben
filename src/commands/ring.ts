@@ -1,7 +1,11 @@
+import { MessageAttachment } from "discord.js";
+
 export default {};
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
-const responses = ["Yes.", "No.", "Hohoho!", "Heeugh.", "..."];
+const assetsLocation = `${__dirname}/../assets`;
+const responsesLocation = `${__dirname}/../assets/conversation-random`;
+const responses = [`yes.mp4`, `no.mp4`, `ugh.mp4`, `laugh.mp4`];
 
 function Sleep(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -18,13 +22,17 @@ function Conversation(interaction) {
 		.awaitMessages({ filter, time: 12000, max: 1, errors: ["time"] })
 		.then(async (messages) => {
 			await Sleep(RandomInt(50, 400));
-			interaction.channel.send(
-				responses[Math.floor(Math.random() * responses.length)]
+			const file = new MessageAttachment(
+				`${responsesLocation}/${
+					responses[Math.floor(Math.random() * responses.length)]
+				}`
 			);
+			messages.first().reply({ files: [file] });
 			Conversation(interaction);
 		})
 		.catch(() => {
-			interaction.channel.send("☎");
+			const file = new MessageAttachment(`${assetsLocation}/hangup.mp4`);
+			interaction.followUp({ files: [file] });
 			return;
 		});
 }
@@ -34,15 +42,8 @@ module.exports = {
 		.setName("ring")
 		.setDescription("Have a telephone conversation with Ben"),
 	async execute(interaction) {
-		await interaction.reply("☎ (Dialing...)");
-		await Sleep(700);
-		interaction.editReply("☎ .");
-		await Sleep(500);
-		interaction.editReply("☎ ..");
-		await Sleep(500);
-		interaction.editReply("☎ ...");
-		await Sleep(600);
-		interaction.channel.send("Ben?").then(() => {
+		const file = new MessageAttachment(`${assetsLocation}/ring.mp4`);
+		interaction.reply({ files: [file] }).then(() => {
 			Conversation(interaction);
 		});
 	},
